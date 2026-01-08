@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './ProductList.css'
 import CartItem from './CartItem';
+import { useSelector, useDispatch } from "react-redux";
+import { addItem, removeItem, updateQuantity } from './CartSlice';
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
+    const [addedToCart, setAddedToCart] = useState({});
 
     const plantsArray = [
         {
@@ -52,13 +55,15 @@ function ProductList({ onHomeClick }) {
             plants: [
                 {
                     name: "Lavender",
-                    image: "https://images.unsplash.com/photo-1611909023032-2d6b3134ecba?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    image1: "https://images.unsplash.com/photo-1611909023032-2d6b3134ecba?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    image: "https://cdn.pixabay.com/photo/2025/06/25/22/55/lavender-9680870_1280.jpg",
                     description: "Calming scent, used in aromatherapy.",
                     cost: "$20"
                 },
                 {
                     name: "Jasmine",
-                    image: "https://images.unsplash.com/photo-1592729645009-b96d1e63d14b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    image1: "https://images.unsplash.com/photo-1592729645009-b96d1e63d14b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    image: "https://cdn.pixabay.com/photo/2019/08/10/11/54/the-national-flower-of-pakistan-4396746_1280.jpg",
                     description: "Sweet fragrance, promotes relaxation.",
                     cost: "$18"
                 },
@@ -117,7 +122,8 @@ function ProductList({ onHomeClick }) {
                 },
                 {
                     name: "Lavender",
-                    image: "https://images.unsplash.com/photo-1611909023032-2d6b3134ecba?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    image1: "https://images.unsplash.com/photo-1611909023032-2d6b3134ecba?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    image: "https://cdn.pixabay.com/photo/2025/06/25/22/55/lavender-9680870_1280.jpg",
                     description: "Calming scent, used in aromatherapy.",
                     cost: "$20"
                 },
@@ -175,8 +181,9 @@ function ProductList({ onHomeClick }) {
             plants: [
                 {
                     name: "ZZ Plant",
-                    image: "https://images.unsplash.com/photo-1632207691143-643e2a9a9361?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                    description: "Thrives in low light and requires minimal watering.",
+                    image1: "https://images.unsplash.com/photo-1632207691143-643e2a9a9361?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    image: "https://cdn.pixabay.com/photo/2021/12/15/18/18/flowers-6873165_1280.jpg",
+                    description: "Thrives in low light and requires minimal watering. Good for beginners.",
                     cost: "$25"
                 },
                 {
@@ -194,7 +201,7 @@ function ProductList({ onHomeClick }) {
                 {
                     name: "Cast Iron Plant",
                     image: "https://cdn.pixabay.com/photo/2017/02/16/18/04/cast-iron-plant-2072008_1280.jpg",
-                    description: "Hardy plant that tolerates low light and neglect.",
+                    description: "Hardy plant that tolerates low light and neglect. Good for beginners.",
                     cost: "$20"
                 },
                 {
@@ -232,6 +239,15 @@ function ProductList({ onHomeClick }) {
         fontSize: '30px',
         textDecoration: 'none',
     }
+
+    const handleAddToCart = (plant) => {
+        dispatch(addItem(plant));
+
+        setAddedToCart((prevState) => ({
+            ...prevState,
+            [plant.name]: true
+        }))
+    };
 
     const handleHomeClick = (e) => {
         e.preventDefault();
@@ -275,6 +291,54 @@ function ProductList({ onHomeClick }) {
             {!showCart ? (
                 <div className="product-grid">
 
+                    {
+                        plantsArray.map((category, index) => (
+
+                            <div key={index}>
+                                <hr className="hr-top"></hr>
+                                <div className="product-title plantname_heading">
+                                    <h1> {category.category}</h1>
+                                </div>
+                                <hr className="hr-bottom"></hr>
+                                <div className="product-list">
+                                    {
+                                        category.plants.map((plant, plantIndex) => (
+                                            <>
+                                                <div className="product-card" key={plantIndex}>
+                                                    <img className="product-image" src={plant.image} alt={plant.name} />
+                                                    <div className="product-title"> {plant.name} </div>
+                                                    <div className="product-description">{plant.description}</div> 
+                                                    <div className="product-price"> {plant.cost} </div>
+                                                    <button className="product-button" onClick={() => handleAddToCart(plant)}>
+                                                        Add to Cart
+                                                    </button>
+                                                </div>
+                                            </>
+                                        ))
+                                    }
+                                </div>
+
+                                {/*
+                                
+                                <div className="product-list" key={index}>
+                                    {
+                                        item.plants.map((product, productIndex) => {
+                                            <>
+                                                <div className="product-card">
+                                                    <div className="img">
+                                                        <img src={product.img} alt={product.name} />
+                                                    </div>
+                                                    <div className="text"> {product.name} </div>
+                                                    <div> {product.cost} </div>
+                                                </div>
+                                            </>
+                                        })
+                                    }
+                                </div>
+                                */}
+                            </div>
+                        ))
+                    }
 
                 </div>
             ) : (
