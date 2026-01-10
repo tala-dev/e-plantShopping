@@ -1,3 +1,11 @@
+/**
+ * CartItem component
+ * ------------------
+ * Displays all items added to the shopping cart.
+ * Allows users to increment, decrement, or remove items,
+ * and calculates total cart value using Redux state.
+ */
+
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateQuantity } from './CartSlice';
@@ -5,6 +13,8 @@ import { removeItem, updateQuantity } from './CartSlice';
 import './CartItem.css';
 
 const CartItem = ({ onContinueShopping }) => {
+
+  // Access cart items from Redux store
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
@@ -22,10 +32,17 @@ const CartItem = ({ onContinueShopping }) => {
     onContinueShopping(e);
   };
 
+  /**
+   * Increases quantity of selected item in the cart
+   */
   const handleIncrement = (item) => {
     dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
   };
 
+  /**
+   * Decreases quantity of selected item.
+   * If quantity reaches 1 and is decremented, item is removed.
+   */
   const handleDecrement = (item) => {
     if (item.quantity > 1) {
       dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
@@ -34,6 +51,9 @@ const CartItem = ({ onContinueShopping }) => {
     }
   };
 
+  /**
+   * Removes item completely from the cart
+   */
   const handleRemove = (item) => {
     dispatch(removeItem(item.name));
   };

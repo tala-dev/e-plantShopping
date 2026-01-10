@@ -1,16 +1,32 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * ProductList component
+ * ---------------------
+ * Displays categorized plant products and manages cart interactions.
+ * Integrates with Redux for global cart state and supports conditional
+ * rendering between product listing and shopping cart views.
+ */
+
+import { useState, useEffect } from 'react';
 import './ProductList.css'
 import CartItem from './CartItem';
 import { useSelector, useDispatch } from "react-redux";
-import { addItem, removeItem, updateQuantity } from './CartSlice';
+
+// Redux actions for cart operations
+import { addItem } from './CartSlice';
+
+// Main component responsible for displaying products and cart navigation
 function ProductList({ onHomeClick }) {
+
+    // Access cart items from Redux store
     const CartItems = useSelector(state => state.cart.items);
+
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    // const [addedToCart, setAddedToCart] = useState({});
-    
+
     const dispatch = useDispatch();
 
+    // Static product catalog grouped by category.
+    // Each category contains an array of plant objects with display and pricing data.
     const plantsArray = [
         {
             category: "Air Purifying Plants",
@@ -243,14 +259,9 @@ function ProductList({ onHomeClick }) {
         textDecoration: 'none',
     }
 
+    // Adds selected plant to the cart using Redux action
     const handleAddToCart = (plant) => {
         dispatch(addItem(plant));
-
-        // setAddedToCart((prevState) => ({
-        //     ...prevState,
-        //     [plant.name]: true
-        // }))
-
     };
 
     // Check if plant is in cart by looking at Redux state
@@ -278,12 +289,15 @@ function ProductList({ onHomeClick }) {
         setShowCart(false);
     };
 
+    // Calculates total quantity of items in the cart
+    // Used for displaying cart badge count
     const calculateTotalQuantity = () => {
-        // return CartItems ? CartItems.reduce((total, item) => total + item.quantity, 0) : 0;
         console.log("Cart Items", CartItems.toString());
         return CartItems ? CartItems.reduce((total, item) => total + item.quantity, 0) : 0;
     };
 
+    // Logs total cart quantity whenever the component renders
+    // Useful for debugging cart state changes during development
     useEffect(() => {
         console.log("totalCartAmount", calculateTotalQuantity());
     });
